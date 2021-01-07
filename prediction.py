@@ -26,8 +26,7 @@ def detect_face(image: Image.Image):
         arr_face = arr_image[top:bottom, left:right].copy()
         pil_face = Image.fromarray(np.uint8(arr_face))
         return pil_face
-    else:
-        return image.resize(INPUT_SHAPE_2)
+    return None
     
 def preprocess(image: Image.Image):
     image = image.resize(INPUT_SHAPE_2)
