@@ -7,3 +7,4 @@
 	uvloop==0.14.0
 	httptools
 	python-multipart
+	pandas

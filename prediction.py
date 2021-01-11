@@ -4,6 +4,7 @@ from tensorflow.keras.models import model_from_json
 from face_recognition import face_locations
 import numpy as np 
 import time 
+import pandas as pd 
 
 # INPUT_SHAPE_1 = (480, 480)
 INPUT_SHAPE_2 = (224, 224)
@@ -48,6 +49,7 @@ def load_tf_model():
     return gmodel, emodel
 
 gmodel, emodel = load_tf_model()
+df = pd.read_excel('./data/Caption.xlsx', sheet_name=[1, 2, 3, 4], header=None)
 
 def predict(image:np.ndarray):
     pred = gmodel.predict(image)
@@ -61,4 +63,18 @@ def predict(image:np.ndarray):
         emotion = 'NORMAL'
     else:
         emotion = 'SMILE'
-    return gender, emotion
+    
+    # Generate a caption for the image
+    if gender == 'WOMEN':
+        if emotion == 'SMILE':
+            caption = df[1]        
+        else:
+            caption = df[2]
+    else:
+        if emotion == 'SMILE':
+            caption = df[3]
+        else:
+            caption = df[4]
+
+    num = np.random.randint(len(caption))
+    return caption.iloc[num][0]
