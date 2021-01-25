@@ -49,7 +49,27 @@ def load_tf_model():
     return gmodel, emodel
 
 gmodel, emodel = load_tf_model()
-df = pd.read_excel('./data/Caption.xlsx', sheet_name=[1, 2, 3, 4], header=None)
+df = pd.read_excel('./data/Caption.xlsx', sheet_name=[1, 2, 3, 4, 5, 6], header=None)
+
+def generate_caption(gender, emotion):
+    # Generate a caption for the image
+    if gender == 'WOMEN':
+        if emotion == 'SMILE':
+            caption = df[1]        
+        elif emotion == 'NORMAL':
+            caption = df[2]
+        else:
+            caption = df[5]
+    else:
+        if emotion == 'SMILE':
+            caption = df[3]
+        elif emotion == 'NORMAL':
+            caption = df[4]
+        else:
+            caption = df[6]
+
+    num = np.random.randint(len(caption))
+    return caption.iloc[num][0]
 
 def predict(image:np.ndarray):
     pred = gmodel.predict(image)
@@ -58,23 +78,14 @@ def predict(image:np.ndarray):
     else:
         gender = 'MEN'
 
-    pred = emodel.predict(image)
-    if pred[0] > 0.5:
+    pred = emodel.predict(image)[0]
+    if np.argmax(pred) == 0:
+        emotion = 'SMILE'
+    elif np.argmax(pred) == 1:
         emotion = 'NORMAL'
     else:
-        emotion = 'SMILE'
-    
-    # Generate a caption for the image
-    if gender == 'WOMEN':
-        if emotion == 'SMILE':
-            caption = df[1]        
-        else:
-            caption = df[2]
-    else:
-        if emotion == 'SMILE':
-            caption = df[3]
-        else:
-            caption = df[4]
+        emotion = 'WEAR_GLASSES'
 
-    num = np.random.randint(len(caption))
-    return caption.iloc[num][0]
+    cap = generate_caption(gender, emotion)
+    return gender, emotion, cap
+
